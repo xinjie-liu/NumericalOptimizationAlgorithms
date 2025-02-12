@@ -1,6 +1,6 @@
 import jax.numpy as jnp
 import numpy as np
-from src.objective_function import construct_problem
+from src.objectivefunction import construct_problem
 from src.meta_solver import MetaSolver, optSolverNewtonNinjas
 from src.utils import plot_results
 
