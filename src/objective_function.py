@@ -37,16 +37,10 @@ def construct_problem(name, x0):
     """
     Initialize a problem object with the user specified problem name and starting point
     """
-    if name == "P1_quad_10_10":
-        problem = Problem1()
-    elif name == "Rosenbrock_2":
-        problem = Problem7()
-    elif name == "Rosenbrock_100":
-        problem = Problem8()
-    elif name == "Exponential_100":
+    if name == "Exponential_100":
         problem = Problem11()
     else: # raise an exception if name is out of the scope
-        raise Exception("Please pass a proper problem name! Options: ['P1_quad_10_10', 'Rosenbrock_2', 'Rosenbrock_100', 'Exponential_100']")
+        raise Exception("Please pass a proper problem name! Options: ['Exponential_100']")
 
     problem.set_initial_point(x0) # set initial point
     
@@ -56,64 +50,6 @@ def construct_problem(name, x0):
 
 # All problem classes have common fields `name` and `x0` indicating the probelm name string and the initial guess
 # The field `x0` needs to be set by invoking the `self.set_initial_point` method
-
-class Problem1(ObjectiveFunction):
-    def __init__(self):
-        rng = np.random.default_rng(seed = 0) # random number generator
-        self.q = rng.random(10) # random q
-        self.Q = generate_symmetric_matrix(1, 10, 10, rng) # random Q with specified condition number
-        self.dim_n = 10 # dimension
-        self.name = "P1_quad_10_10"
-
-    def set_initial_point(self, x0):
-        # set up initial point
-        if not jnp.shape(x0)[0] == self.dim_n: # check dimension
-            raise Exception("The initial guess x0 should have the correct dimension!")
-        else:
-            self.x0 = x0
-
-    @partial(jit, static_argnums=0)
-    def f(self, x): # function value
-        fx = 0.5 * x.T @ self.Q @ x + self.q.T @ x
-        return fx
-
-class Problem7(ObjectiveFunction):
-    def __init__(self):
-        self.dim_n = 2
-        self.name = "Rosenbrock_2"
-
-    def set_initial_point(self, x0):
-        # set up initial point
-        if not jnp.shape(x0)[0] == self.dim_n:
-            raise Exception("The initial guess x0 should have the correct dimension!")
-        else:
-            self.x0 = x0
-    
-    @partial(jit, static_argnums=0)
-    def f(self, x):
-        fx = 0.0
-        for ii in range(self.dim_n - 1):
-            fx += 100 * (x[ii+1] - x[ii]**2)**2 + (1 - x[ii])**2
-        return fx
-
-class Problem8(ObjectiveFunction):
-    def __init__(self):
-        self.dim_n = 100
-        self.name = "Rosenbrock_100"
-
-    def set_initial_point(self, x0):
-        # set up initial point
-        if not jnp.shape(x0)[0] == self.dim_n:
-            raise Exception("The initial guess x0 should have the correct dimension!")
-        else:
-            self.x0 = x0
-    
-    @partial(jit, static_argnums=0)
-    def f(self, x):
-        fx = 0.0
-        for ii in range(self.dim_n - 1):
-            fx += 100 * (x[ii+1] - x[ii]**2)**2 + (1 - x[ii])**2
-        return fx
 
 class Problem11(ObjectiveFunction):
     def __init__(self):
