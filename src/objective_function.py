@@ -37,10 +37,12 @@ def construct_problem(name, x0):
     """
     Initialize a problem object with the user specified problem name and starting point
     """
-    if name == "Exponential_100":
-        problem = Problem11()
+    if name == "Rosenbrock_2":
+        problem = Problem1()
+    elif name == "Rosenbrock_100":
+        problem = Problem2()
     else: # raise an exception if name is out of the scope
-        raise Exception("Please pass a proper problem name! Options: ['Exponential_100']")
+        raise Exception("Please pass a proper problem name! Options: ['Rosenbrock_2', 'Rosenbrock_100']")
 
     problem.set_initial_point(x0) # set initial point
     
@@ -51,10 +53,10 @@ def construct_problem(name, x0):
 # All problem classes have common fields `name` and `x0` indicating the probelm name string and the initial guess
 # The field `x0` needs to be set by invoking the `self.set_initial_point` method
 
-class Problem11(ObjectiveFunction):
+class Problem1(ObjectiveFunction):
     def __init__(self):
-        self.dim_n = 100
-        self.name = "Exponential_100"
+        self.dim_n = 2
+        self.name = "Rosenbrock_2"
 
     def set_initial_point(self, x0):
         # set up initial point
@@ -62,10 +64,29 @@ class Problem11(ObjectiveFunction):
             raise Exception("The initial guess x0 should have the correct dimension!")
         else:
             self.x0 = x0
-
+    
     @partial(jit, static_argnums=0)
     def f(self, x):
-        fx = (jnp.exp(x[0]) - 1) / (jnp.exp(x[0]) + 1) + 0.1 * jnp.exp(-x[0])
-        for ii in np.arange(1, 100):
-            fx += (x[ii] - 1)**4
+        fx = 0.0
+        for ii in range(self.dim_n - 1):
+            fx += 100 * (x[ii+1] - x[ii]**2)**2 + (1 - x[ii])**2
+        return fx
+
+class Problem2(ObjectiveFunction):
+    def __init__(self):
+        self.dim_n = 100
+        self.name = "Rosenbrock_100"
+
+    def set_initial_point(self, x0):
+        # set up initial point
+        if not jnp.shape(x0)[0] == self.dim_n:
+            raise Exception("The initial guess x0 should have the correct dimension!")
+        else:
+            self.x0 = x0
+    
+    @partial(jit, static_argnums=0)
+    def f(self, x):
+        fx = 0.0
+        for ii in range(self.dim_n - 1):
+            fx += 100 * (x[ii+1] - x[ii]**2)**2 + (1 - x[ii])**2
         return fx
